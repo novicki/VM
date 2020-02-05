@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="VendingMachineModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Cash">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="cashOwnerId" Type="Int32" />
+    <Property Name="cashTypeId" Type="Int32" />
+    <Property Name="amount" Type="Int32" />
+    <NavigationProperty Name="CashOwner" Relationship="Self.Cash_fk" FromRole="Cash" ToRole="CashOwner" />
+    <NavigationProperty Name="CashType" Relationship="Self.Cash_fk2" FromRole="Cash" ToRole="CashType" />
+  </EntityType>
+  <EntityType Name="CashOwner">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Cash" Relationship="Self.Cash_fk" FromRole="CashOwner" ToRole="Cash" />
+    <NavigationProperty Name="UserBalance" Relationship="Self.UserBalance_fk" FromRole="CashOwner" ToRole="UserBalance" />
+  </EntityType>
+  <EntityType Name="CashType">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="value" Type="Int32" />
+    <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="isCoin" Type="Boolean" />
+    <NavigationProperty Name="Cash" Relationship="Self.Cash_fk2" FromRole="CashType" ToRole="Cash" />
+  </EntityType>
+  <EntityType Name="ProductRange">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="price" Type="Int32" />
+    <Property Name="amount" Type="Int32" />
+  </EntityType>
+  <EntityType Name="ProductSales">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="productId" Type="Int32" />
+    <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="price" Type="Int32" />
+    <Property Name="userID" Type="Int32" />
+    <Property Name="isNewUser" Type="Boolean" />
+    <Property Name="saleTime" Type="DateTime" Precision="7" />
+  </EntityType>
+  <EntityType Name="UserBalance">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="cashOwnerId" Type="Int32" />
+    <Property Name="balance" Type="Int32" />
+    <NavigationProperty Name="CashOwner" Relationship="Self.UserBalance_fk" FromRole="UserBalance" ToRole="CashOwner" />
+  </EntityType>
+  <Association Name="Cash_fk">
+    <End Role="CashOwner" Type="Self.CashOwner" Multiplicity="0..1" />
+    <End Role="Cash" Type="Self.Cash" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="CashOwner">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Cash">
+        <PropertyRef Name="cashOwnerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="Cash_fk2">
+    <End Role="CashType" Type="Self.CashType" Multiplicity="0..1" />
+    <End Role="Cash" Type="Self.Cash" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="CashType">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Cash">
+        <PropertyRef Name="cashTypeId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="UserBalance_fk">
+    <End Role="CashOwner" Type="Self.CashOwner" Multiplicity="0..1" />
+    <End Role="UserBalance" Type="Self.UserBalance" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="CashOwner">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="UserBalance">
+        <PropertyRef Name="cashOwnerId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="VendingMachineEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Cash" EntityType="Self.Cash" />
+    <EntitySet Name="CashOwner" EntityType="Self.CashOwner" />
+    <EntitySet Name="CashType" EntityType="Self.CashType" />
+    <EntitySet Name="ProductRange" EntityType="Self.ProductRange" />
+    <EntitySet Name="ProductSales" EntityType="Self.ProductSales" />
+    <EntitySet Name="UserBalance" EntityType="Self.UserBalance" />
+    <AssociationSet Name="Cash_fk" Association="Self.Cash_fk">
+      <End Role="CashOwner" EntitySet="CashOwner" />
+      <End Role="Cash" EntitySet="Cash" />
+    </AssociationSet>
+    <AssociationSet Name="Cash_fk2" Association="Self.Cash_fk2">
+      <End Role="CashType" EntitySet="CashType" />
+      <End Role="Cash" EntitySet="Cash" />
+    </AssociationSet>
+    <AssociationSet Name="UserBalance_fk" Association="Self.UserBalance_fk">
+      <End Role="CashOwner" EntitySet="CashOwner" />
+      <End Role="UserBalance" EntitySet="UserBalance" />
+    </AssociationSet>
+    <FunctionImport Name="BuyProduct">
+      <Parameter Name="cashOwner" Mode="In" Type="Int32" />
+      <Parameter Name="productId" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="ChangeCashAmount">
+      <Parameter Name="CashOwner" Mode="In" Type="Int32" />
+      <Parameter Name="CashRecipient" Mode="In" Type="Int32" />
+      <Parameter Name="CashType" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="DecreaseBalance">
+      <Parameter Name="CashRecipient" Mode="In" Type="Int32" />
+      <Parameter Name="ValueSubtraction" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="GetChange">
+      <Parameter Name="CashOwner" Mode="In" Type="Int32" />
+      <Parameter Name="CashRecipient" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="GetSumCashOwner" ReturnType="Collection(Int32)">
+      <Parameter Name="id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="GetWallet" ReturnType="Collection(VendingMachineModel.GetWallet_Result)">
+      <Parameter Name="id" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="IncreaseBalance">
+      <Parameter Name="CashOwner" Mode="In" Type="Int32" />
+      <Parameter Name="CashType" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="NewUserBasket" />
+    <FunctionImport Name="ProductLatestSales" ReturnType="Collection(VendingMachineModel.ProductLatestSales_Result)" />
+    <FunctionImport Name="SelectDefaultUserWallet" ReturnType="Collection(VendingMachineModel.SelectDefaultUserWallet_Result)" />
+    <FunctionImport Name="SelectDefaultVendingMachineWallet" ReturnType="Collection(VendingMachineModel.SelectDefaultVendingMachineWallet_Result)" />
+  </EntityContainer>
+  <ComplexType Name="GetWallet_Result">
+    <Property Type="String" Name="name" Nullable="true" MaxLength="30" />
+    <Property Type="Int32" Name="amount" Nullable="true" />
+    <Property Type="Int32" Name="TypeCash" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="ProductLatestSales_Result">
+    <Property Type="Int32" Name="productId" Nullable="true" />
+    <Property Type="String" Name="name" Nullable="true" MaxLength="30" />
+    <Property Type="Int32" Name="price" Nullable="true" />
+    <Property Type="Int32" Name="amount" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="SelectDefaultUserWallet_Result">
+    <Property Type="String" Name="name" Nullable="true" MaxLength="30" />
+    <Property Type="Int32" Name="amount" Nullable="true" />
+  </ComplexType>
+  <ComplexType Name="SelectDefaultVendingMachineWallet_Result">
+    <Property Type="String" Name="name" Nullable="true" MaxLength="30" />
+    <Property Type="Int32" Name="amount" Nullable="true" />
+  </ComplexType>
+</Schema>

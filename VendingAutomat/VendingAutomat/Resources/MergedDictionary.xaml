@@ -1,0 +1,40 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:VendingAutomat.Resources"
+    xmlns:viewModel="clr-namespace:VendingAutomat.ViewModel">
+    <!--  Шаблон данных для денег в кошельке/деньгохранилище  -->
+
+    <DataTemplate DataType="{x:Type viewModel:MoneyViewModel}">
+        <StackPanel Orientation="Horizontal">
+            <Button
+                Command="{Binding InsertCashCommand}"
+                CommandParameter="{Binding .}"
+                Visibility="{Binding IsButtonVisible}">
+                +
+            </Button>
+            <Image
+                Width="32"
+                Height="32"
+                Source="{Binding Icon}" />
+            <Label Content="{Binding Name}" />
+            <Label Content="{Binding Amount}" />
+
+        </StackPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModel:ProductViewModel}">
+        <StackPanel Orientation="Horizontal">
+            <Button
+                Command="{Binding BuyCommand}"
+                CommandParameter="{Binding .}"
+                Visibility="{Binding IsButtonVisible}">
+                +
+            </Button>
+            <Label Content="{Binding Name}" />
+            <Label Content="{Binding Price}" FontWeight="DemiBold" />
+            <Label Content="{Binding Amount}" />
+
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>

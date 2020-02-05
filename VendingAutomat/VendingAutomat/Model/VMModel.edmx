@@ -1,0 +1,471 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="VendingMachineModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Cash">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="cashOwnerId" Type="int" />
+          <Property Name="cashTypeId" Type="int" />
+          <Property Name="amount" Type="int" />
+        </EntityType>
+        <EntityType Name="CashOwner">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="CashType">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="value" Type="int" />
+          <Property Name="name" Type="varchar" MaxLength="30" />
+          <Property Name="isCoin" Type="bit" />
+        </EntityType>
+        <EntityType Name="ProductRange">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nvarchar" MaxLength="30" />
+          <Property Name="price" Type="int" />
+          <Property Name="amount" Type="int" />
+        </EntityType>
+        <EntityType Name="ProductSales">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="productId" Type="int" />
+          <Property Name="name" Type="varchar" MaxLength="30" />
+          <Property Name="price" Type="int" />
+          <Property Name="userID" Type="int" />
+          <Property Name="isNewUser" Type="bit" />
+          <Property Name="saleTime" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="UserBalance">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="cashOwnerId" Type="int" />
+          <Property Name="balance" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'VendingMachine.dbo.DefaultUserWallet' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="DefaultUserWallet">
+          <Property Name="name" Type="varchar" MaxLength="30" />
+          <Property Name="amount" Type="int" />
+        </EntityType>-->
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'VendingMachine.dbo.DefaultVendingMachineWallet' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="DefaultVendingMachineWallet">
+          <Property Name="name" Type="varchar" MaxLength="30" />
+          <Property Name="amount" Type="int" />
+        </EntityType>-->
+        <Association Name="Cash_fk">
+          <End Role="CashOwner" Type="Self.CashOwner" Multiplicity="0..1" />
+          <End Role="Cash" Type="Self.Cash" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CashOwner">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Cash">
+              <PropertyRef Name="cashOwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Cash_fk2">
+          <End Role="CashType" Type="Self.CashType" Multiplicity="0..1" />
+          <End Role="Cash" Type="Self.Cash" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CashType">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Cash">
+              <PropertyRef Name="cashTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UserBalance_fk">
+          <End Role="CashOwner" Type="Self.CashOwner" Multiplicity="0..1" />
+          <End Role="UserBalance" Type="Self.UserBalance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CashOwner">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="UserBalance">
+              <PropertyRef Name="cashOwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="BuyProduct" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="cashOwner" Type="int" Mode="In" />
+          <Parameter Name="productId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="ChangeCashAmount" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CashOwner" Type="int" Mode="In" />
+          <Parameter Name="CashRecipient" Type="int" Mode="In" />
+          <Parameter Name="CashType" Type="int" Mode="In" />
+        </Function>
+        <Function Name="DecreaseBalance" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CashRecipient" Type="int" Mode="In" />
+          <Parameter Name="ValueSubtraction" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetChange" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CashOwner" Type="int" Mode="In" />
+          <Parameter Name="CashRecipient" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetMaxCashTypeInStock" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int">
+          <Parameter Name="CashOwner" Type="int" Mode="In" />
+          <Parameter Name="UserBalance" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetMaxCashValueInStock" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="int">
+          <Parameter Name="CashOwner" Type="int" Mode="In" />
+          <Parameter Name="UserBalance" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetSumCashOwner" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="GetWallet" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="IncreaseBalance" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CashOwner" Type="int" Mode="In" />
+          <Parameter Name="CashType" Type="int" Mode="In" />
+        </Function>
+        <Function Name="NewUserBasket" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="ProductLatestSales" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="SelectDefaultUserWallet" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="SelectDefaultVendingMachineWallet" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <EntityContainer Name="VendingMachineModelStoreContainer">
+          <EntitySet Name="Cash" EntityType="Self.Cash" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CashOwner" EntityType="Self.CashOwner" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CashType" EntityType="Self.CashType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductRange" EntityType="Self.ProductRange" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProductSales" EntityType="Self.ProductSales" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserBalance" EntityType="Self.UserBalance" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="Cash_fk" Association="Self.Cash_fk">
+            <End Role="CashOwner" EntitySet="CashOwner" />
+            <End Role="Cash" EntitySet="Cash" />
+          </AssociationSet>
+          <AssociationSet Name="Cash_fk2" Association="Self.Cash_fk2">
+            <End Role="CashType" EntitySet="CashType" />
+            <End Role="Cash" EntitySet="Cash" />
+          </AssociationSet>
+          <AssociationSet Name="UserBalance_fk" Association="Self.UserBalance_fk">
+            <End Role="CashOwner" EntitySet="CashOwner" />
+            <End Role="UserBalance" EntitySet="UserBalance" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="VendingMachineModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Cash">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="cashOwnerId" Type="Int32" />
+          <Property Name="cashTypeId" Type="Int32" />
+          <Property Name="amount" Type="Int32" />
+          <NavigationProperty Name="CashOwner" Relationship="Self.Cash_fk" FromRole="Cash" ToRole="CashOwner" />
+          <NavigationProperty Name="CashType" Relationship="Self.Cash_fk2" FromRole="Cash" ToRole="CashType" />
+        </EntityType>
+        <EntityType Name="CashOwner">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Cash" Relationship="Self.Cash_fk" FromRole="CashOwner" ToRole="Cash" />
+          <NavigationProperty Name="UserBalance" Relationship="Self.UserBalance_fk" FromRole="CashOwner" ToRole="UserBalance" />
+        </EntityType>
+        <EntityType Name="CashType">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="value" Type="Int32" />
+          <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="isCoin" Type="Boolean" />
+          <NavigationProperty Name="Cash" Relationship="Self.Cash_fk2" FromRole="CashType" ToRole="Cash" />
+        </EntityType>
+        <EntityType Name="ProductRange">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="price" Type="Int32" />
+          <Property Name="amount" Type="Int32" />
+        </EntityType>
+        <EntityType Name="ProductSales">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="productId" Type="Int32" />
+          <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="price" Type="Int32" />
+          <Property Name="userID" Type="Int32" />
+          <Property Name="isNewUser" Type="Boolean" />
+          <Property Name="saleTime" Type="DateTime" Precision="7" />
+        </EntityType>
+        <EntityType Name="UserBalance">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="cashOwnerId" Type="Int32" />
+          <Property Name="balance" Type="Int32" />
+          <NavigationProperty Name="CashOwner" Relationship="Self.UserBalance_fk" FromRole="UserBalance" ToRole="CashOwner" />
+        </EntityType>
+        <Association Name="Cash_fk">
+          <End Role="CashOwner" Type="Self.CashOwner" Multiplicity="0..1" />
+          <End Role="Cash" Type="Self.Cash" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CashOwner">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Cash">
+              <PropertyRef Name="cashOwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="Cash_fk2">
+          <End Role="CashType" Type="Self.CashType" Multiplicity="0..1" />
+          <End Role="Cash" Type="Self.Cash" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CashType">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Cash">
+              <PropertyRef Name="cashTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="UserBalance_fk">
+          <End Role="CashOwner" Type="Self.CashOwner" Multiplicity="0..1" />
+          <End Role="UserBalance" Type="Self.UserBalance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CashOwner">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="UserBalance">
+              <PropertyRef Name="cashOwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="VendingMachineEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Cash" EntityType="Self.Cash" />
+          <EntitySet Name="CashOwner" EntityType="Self.CashOwner" />
+          <EntitySet Name="CashType" EntityType="Self.CashType" />
+          <EntitySet Name="ProductRange" EntityType="Self.ProductRange" />
+          <EntitySet Name="ProductSales" EntityType="Self.ProductSales" />
+          <EntitySet Name="UserBalance" EntityType="Self.UserBalance" />
+          <AssociationSet Name="Cash_fk" Association="Self.Cash_fk">
+            <End Role="CashOwner" EntitySet="CashOwner" />
+            <End Role="Cash" EntitySet="Cash" />
+          </AssociationSet>
+          <AssociationSet Name="Cash_fk2" Association="Self.Cash_fk2">
+            <End Role="CashType" EntitySet="CashType" />
+            <End Role="Cash" EntitySet="Cash" />
+          </AssociationSet>
+          <AssociationSet Name="UserBalance_fk" Association="Self.UserBalance_fk">
+            <End Role="CashOwner" EntitySet="CashOwner" />
+            <End Role="UserBalance" EntitySet="UserBalance" />
+          </AssociationSet>
+          <FunctionImport Name="BuyProduct">
+            <Parameter Name="cashOwner" Mode="In" Type="Int32" />
+            <Parameter Name="productId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="ChangeCashAmount">
+            <Parameter Name="CashOwner" Mode="In" Type="Int32" />
+            <Parameter Name="CashRecipient" Mode="In" Type="Int32" />
+            <Parameter Name="CashType" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="DecreaseBalance">
+            <Parameter Name="CashRecipient" Mode="In" Type="Int32" />
+            <Parameter Name="ValueSubtraction" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetChange">
+            <Parameter Name="CashOwner" Mode="In" Type="Int32" />
+            <Parameter Name="CashRecipient" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetSumCashOwner" ReturnType="Collection(Int32)">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="GetWallet" ReturnType="Collection(VendingMachineModel.GetWallet_Result)">
+            <Parameter Name="id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="IncreaseBalance">
+            <Parameter Name="CashOwner" Mode="In" Type="Int32" />
+            <Parameter Name="CashType" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="NewUserBasket" />
+          <FunctionImport Name="ProductLatestSales" ReturnType="Collection(VendingMachineModel.ProductLatestSales_Result)" />
+          <FunctionImport Name="SelectDefaultUserWallet" ReturnType="Collection(VendingMachineModel.SelectDefaultUserWallet_Result)" />
+          <FunctionImport Name="SelectDefaultVendingMachineWallet" ReturnType="Collection(VendingMachineModel.SelectDefaultVendingMachineWallet_Result)" />
+        </EntityContainer>
+        <ComplexType Name="GetWallet_Result">
+          <Property Type="String" Name="name" Nullable="true" MaxLength="30" />
+          <Property Type="Int32" Name="amount" Nullable="true" />
+          <Property Type="Int32" Name="TypeCash" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="ProductLatestSales_Result">
+          <Property Type="Int32" Name="productId" Nullable="true" />
+          <Property Type="String" Name="name" Nullable="true" MaxLength="30" />
+          <Property Type="Int32" Name="price" Nullable="true" />
+          <Property Type="Int32" Name="amount" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="SelectDefaultUserWallet_Result">
+          <Property Type="String" Name="name" Nullable="true" MaxLength="30" />
+          <Property Type="Int32" Name="amount" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="SelectDefaultVendingMachineWallet_Result">
+          <Property Type="String" Name="name" Nullable="true" MaxLength="30" />
+          <Property Type="Int32" Name="amount" Nullable="true" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="VendingMachineModelStoreContainer" CdmEntityContainer="VendingMachineEntities">
+          <EntitySetMapping Name="Cash">
+            <EntityTypeMapping TypeName="VendingMachineModel.Cash">
+              <MappingFragment StoreEntitySet="Cash">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="cashOwnerId" ColumnName="cashOwnerId" />
+                <ScalarProperty Name="cashTypeId" ColumnName="cashTypeId" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CashOwner">
+            <EntityTypeMapping TypeName="VendingMachineModel.CashOwner">
+              <MappingFragment StoreEntitySet="CashOwner">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CashType">
+            <EntityTypeMapping TypeName="VendingMachineModel.CashType">
+              <MappingFragment StoreEntitySet="CashType">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="value" ColumnName="value" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="isCoin" ColumnName="isCoin" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductRange">
+            <EntityTypeMapping TypeName="VendingMachineModel.ProductRange">
+              <MappingFragment StoreEntitySet="ProductRange">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProductSales">
+            <EntityTypeMapping TypeName="VendingMachineModel.ProductSales">
+              <MappingFragment StoreEntitySet="ProductSales">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="productId" ColumnName="productId" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="userID" ColumnName="userID" />
+                <ScalarProperty Name="isNewUser" ColumnName="isNewUser" />
+                <ScalarProperty Name="saleTime" ColumnName="saleTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserBalance">
+            <EntityTypeMapping TypeName="VendingMachineModel.UserBalance">
+              <MappingFragment StoreEntitySet="UserBalance">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="cashOwnerId" ColumnName="cashOwnerId" />
+                <ScalarProperty Name="balance" ColumnName="balance" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="BuyProduct" FunctionName="VendingMachineModel.Store.BuyProduct" />
+          <FunctionImportMapping FunctionImportName="ChangeCashAmount" FunctionName="VendingMachineModel.Store.ChangeCashAmount" />
+          <FunctionImportMapping FunctionImportName="DecreaseBalance" FunctionName="VendingMachineModel.Store.DecreaseBalance" />
+          <FunctionImportMapping FunctionImportName="GetChange" FunctionName="VendingMachineModel.Store.GetChange" />
+          <FunctionImportMapping FunctionImportName="GetSumCashOwner" FunctionName="VendingMachineModel.Store.GetSumCashOwner" />
+          <FunctionImportMapping FunctionImportName="GetWallet" FunctionName="VendingMachineModel.Store.GetWallet">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="VendingMachineModel.GetWallet_Result">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+                <ScalarProperty Name="TypeCash" ColumnName="TypeCash" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="IncreaseBalance" FunctionName="VendingMachineModel.Store.IncreaseBalance" />
+          <FunctionImportMapping FunctionImportName="NewUserBasket" FunctionName="VendingMachineModel.Store.NewUserBasket" />
+          <FunctionImportMapping FunctionImportName="ProductLatestSales" FunctionName="VendingMachineModel.Store.ProductLatestSales">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="VendingMachineModel.ProductLatestSales_Result">
+                <ScalarProperty Name="productId" ColumnName="productId" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="price" ColumnName="price" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SelectDefaultUserWallet" FunctionName="VendingMachineModel.Store.SelectDefaultUserWallet">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="VendingMachineModel.SelectDefaultUserWallet_Result">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="SelectDefaultVendingMachineWallet" FunctionName="VendingMachineModel.Store.SelectDefaultVendingMachineWallet">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="VendingMachineModel.SelectDefaultVendingMachineWallet_Result">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

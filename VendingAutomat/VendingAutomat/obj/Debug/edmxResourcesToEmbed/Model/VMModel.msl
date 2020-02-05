@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="VendingMachineModelStoreContainer" CdmEntityContainer="VendingMachineEntities">
+    <EntitySetMapping Name="Cash">
+      <EntityTypeMapping TypeName="VendingMachineModel.Cash">
+        <MappingFragment StoreEntitySet="Cash">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="cashOwnerId" ColumnName="cashOwnerId" />
+          <ScalarProperty Name="cashTypeId" ColumnName="cashTypeId" />
+          <ScalarProperty Name="amount" ColumnName="amount" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CashOwner">
+      <EntityTypeMapping TypeName="VendingMachineModel.CashOwner">
+        <MappingFragment StoreEntitySet="CashOwner">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="CashType">
+      <EntityTypeMapping TypeName="VendingMachineModel.CashType">
+        <MappingFragment StoreEntitySet="CashType">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="value" ColumnName="value" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="isCoin" ColumnName="isCoin" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ProductRange">
+      <EntityTypeMapping TypeName="VendingMachineModel.ProductRange">
+        <MappingFragment StoreEntitySet="ProductRange">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="price" ColumnName="price" />
+          <ScalarProperty Name="amount" ColumnName="amount" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="ProductSales">
+      <EntityTypeMapping TypeName="VendingMachineModel.ProductSales">
+        <MappingFragment StoreEntitySet="ProductSales">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="productId" ColumnName="productId" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="price" ColumnName="price" />
+          <ScalarProperty Name="userID" ColumnName="userID" />
+          <ScalarProperty Name="isNewUser" ColumnName="isNewUser" />
+          <ScalarProperty Name="saleTime" ColumnName="saleTime" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UserBalance">
+      <EntityTypeMapping TypeName="VendingMachineModel.UserBalance">
+        <MappingFragment StoreEntitySet="UserBalance">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="cashOwnerId" ColumnName="cashOwnerId" />
+          <ScalarProperty Name="balance" ColumnName="balance" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <FunctionImportMapping FunctionImportName="BuyProduct" FunctionName="VendingMachineModel.Store.BuyProduct" />
+    <FunctionImportMapping FunctionImportName="ChangeCashAmount" FunctionName="VendingMachineModel.Store.ChangeCashAmount" />
+    <FunctionImportMapping FunctionImportName="DecreaseBalance" FunctionName="VendingMachineModel.Store.DecreaseBalance" />
+    <FunctionImportMapping FunctionImportName="GetChange" FunctionName="VendingMachineModel.Store.GetChange" />
+    <FunctionImportMapping FunctionImportName="GetSumCashOwner" FunctionName="VendingMachineModel.Store.GetSumCashOwner" />
+    <FunctionImportMapping FunctionImportName="GetWallet" FunctionName="VendingMachineModel.Store.GetWallet">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="VendingMachineModel.GetWallet_Result">
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="amount" ColumnName="amount" />
+          <ScalarProperty Name="TypeCash" ColumnName="TypeCash" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="IncreaseBalance" FunctionName="VendingMachineModel.Store.IncreaseBalance" />
+    <FunctionImportMapping FunctionImportName="NewUserBasket" FunctionName="VendingMachineModel.Store.NewUserBasket" />
+    <FunctionImportMapping FunctionImportName="ProductLatestSales" FunctionName="VendingMachineModel.Store.ProductLatestSales">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="VendingMachineModel.ProductLatestSales_Result">
+          <ScalarProperty Name="productId" ColumnName="productId" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="price" ColumnName="price" />
+          <ScalarProperty Name="amount" ColumnName="amount" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="SelectDefaultUserWallet" FunctionName="VendingMachineModel.Store.SelectDefaultUserWallet">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="VendingMachineModel.SelectDefaultUserWallet_Result">
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="amount" ColumnName="amount" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+    <FunctionImportMapping FunctionImportName="SelectDefaultVendingMachineWallet" FunctionName="VendingMachineModel.Store.SelectDefaultVendingMachineWallet">
+      <ResultMapping>
+        <ComplexTypeMapping TypeName="VendingMachineModel.SelectDefaultVendingMachineWallet_Result">
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="amount" ColumnName="amount" />
+        </ComplexTypeMapping>
+      </ResultMapping>
+    </FunctionImportMapping>
+  </EntityContainerMapping>
+</Mapping>
